@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+        }
+
+        .key-container {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .key {
+            background-color: #555;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .key span {
+            flex-grow: 1;
+        }
+
+        .copy-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Key Generator</h1>
+<p>Click the button to generate 100 keys for 72-hour access</p>
+<button onclick="generateKeys()">Generate Keys</button>
+
+<div class="key-container" id="keyContainer"></div>
+
+<script>
+    const VALID_CHARACTERS = 'ABCDabcd1234567890#';
+    const KEY_LENGTH = 45;
+    const TOTAL_KEYS = 100;
+
+    function generateRandomKey() {
+        let key = '';
+        for (let i = 0; i < KEY_LENGTH; i++) {
+            key += VALID_CHARACTERS.charAt(Math.floor(Math.random() * VALID_CHARACTERS.length));
+        }
+        return key;
+    }
+
+    function generateKeys() {
+        const keyContainer = document.getElementById('keyContainer');
+        keyContainer.innerHTML = ''; // Clear previous keys
+
+        let keys = [];
+        for (let i = 0; i < TOTAL_KEYS; i++) {
+            const key = generateRandomKey();
+            keys.push(key);
+            const keyElement = document.createElement('div');
+            keyElement.classList.add('key');
+            keyElement.innerHTML = `
+                <span>${key}</span>
+                <button class="copy-button" onclick="copyToClipboard('${key}')">Copy</button>
+            `;
+            keyContainer.appendChild(keyElement);
+        }
+
+        // Download keys as a file
+        downloadFile(keys.join('\n'), 'valid_keys.txt');
+    }
+
+    function copyToClipboard(key) {
+        navigator.clipboard.writeText(key).then(() => {
+            alert('Key copied to clipboard: ' + key);
+        });
+    }
+
+    function downloadFile(content, fileName) {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+    }
+</script>
+
+</body>
+</html>
