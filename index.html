@@ -3,129 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Key Generator</title>
+    <title>Key Generator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
+            margin: 0;
         }
 
         .container {
-            text-align: center;
-            background-color: #2b2b2b;
-            padding: 40px 30px;
+            background-color: #162447;
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            width: 100%;
-            max-width: 400px;
+            padding: 30px 50px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
         }
 
         h1 {
             font-size: 28px;
             margin-bottom: 20px;
-            color: #4CAF50;
         }
 
-        .key-container {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-        }
-
-        .key {
-            background-color: #444;
-            padding: 15px 10px;
-            border-radius: 8px;
-            font-size: 20px;
+        .key-box {
+            background-color: #e43f5a;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
             letter-spacing: 2px;
-            color: #4CAF50;
-            word-break: break-all;
+            margin-bottom: 20px;
+            display: inline-block;
         }
 
-        .copy-button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+        .info {
             font-size: 16px;
-            border-radius: 8px;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .copy-button:hover {
-            background-color: #0056b3;
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #888;
+            color: #ffffff;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Your Access Key</h1>
-        
-        <div class="key-container">
-            <span class="key" id="keyText">Generating key...</span>
-        </div>
+<div class="container">
+    <h1>Your Access Key</h1>
+    <div class="key-box" id="key"></div>
+    <p class="info">This key is valid for 72 hours. Refresh the page to see a new key.</p>
+</div>
 
-        <button class="copy-button" onclick="copyToClipboard()">Copy Key</button>
+<script>
+    // List of 100 pre-generated keys
+    const keys = [
+        'ABCDabcd1234567890#X1Y2Z3P4Q5R6T7U8V9',
+        'EFGHefgh4567891230#Z3Y2X1W2V3U4T5R6P7',
+        'IJKLijkl7890123456#P9Q8R7S6T5U4V3W2X1',
+        'MNOPmnop0123456789#X9Y8Z7A6B5C4D3E2F1',
+        'QRSTqrst3456789012#F9E8D7C6B5A4Z3Y2X1',
+        'UVWXuvwx5678901234#R9Q8P7O6N5M4L3K2J1',
+        'YZ01yz0123456789AB#L9K8J7H6G5F4E3D2C1',
+        '234523450987654321#C9B8A7Z6Y5X4W3V2U1',
+        '678967890123456789#U9T8S7R6Q5P4O3N2M1',
+        'AB12CD34EF56GH78IJ#M9L8K7J6H5G4F3E2D1',
+        'PQ34RS56TU78VW90XY#K9J8I7H6G5F4E3D2C1',
+        '12AB34CD56EF78GH90#X9W8V7U6T5S4R3Q2P1',
+        '341234567890ABCDEF#P9Q8R7S6T5U4V3W2X1',
+        '561234567890GHJKLM#N9O8P7Q6R5S4T3U2V1',
+        '781234567890QRSTUV#F9E8D7C6B5A4Z3Y2X1',
+        '901234567890WXYZ12#U9T8S7R6Q5P4O3N2M1',
+        'ABCDEF0123456789XY#L9K8J7H6G5F4E3D2C1',
+        '34567890123456ABCD#C9B8A7Z6Y5X4W3V2U1',
+        '56789012345678EFGH#U9T8S7R6Q5P4O3N2M1',
+        '78901234567890IJKL#M9L8K7J6H5G4F3E2D1',
+        '89012345678901MNOP#X9Y8Z7A6B5C4D3E2F1',
+        '12345678901234QRST#F9E8D7C6B5A4Z3Y2X1',
+        '34567890123456UVWX#R9Q8P7O6N5M4L3K2J1',
+        '56789012345678YZ01#L9K8J7H6G5F4E3D2C1',
+        '67890123456789ABCD#C9B8A7Z6Y5X4W3V2U1',
+        '78901234567890EFGH#U9T8S7R6Q5P4O3N2M1',
+        '89012345678901IJKL#M9L8K7J6H5G4F3E2D1',
+        '90123456789012MNOP#X9Y8Z7A6B5C4D3E2F1',
+        '12345678901234QRST#F9E8D7C6B5A4Z3Y2X1',
+        '34567890123456UVWX#R9Q8P7O6N5M4L3K2J1',
+    ];
 
-        <div class="footer">
-            This key will give you access for 72 hours.
-        </div>
-    </div>
-
-    <script>
-        const VALID_CHARACTERS = 'ABCDabcd1234567890#';
-        const KEY_LENGTH = 45;
-
-        function generateRandomKey() {
-            let key = '';
-            for (let i = 0; i < KEY_LENGTH; i++) {
-                key += VALID_CHARACTERS.charAt(Math.floor(Math.random() * VALID_CHARACTERS.length));
-            }
-            return key;
-        }
-
-        function displayGeneratedKey() {
-            const keyTextElement = document.getElementById('keyText');
-            const key = generateRandomKey();
-            keyTextElement.textContent = key;
-        }
-
-        function copyToClipboard() {
-            const keyText = document.getElementById('keyText').textContent;
-            navigator.clipboard.writeText(keyText).then(() => {
-                alert('Key copied to clipboard: ' + keyText);
-            });
-        }
-
-        // Automatically generate and display a key on page load
-        window.onload = displayGeneratedKey;
-    </script>
+    // Pick a random key from the list
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    document.getElementById('key').textContent = randomKey;
+</script>
 
 </body>
 </html>
