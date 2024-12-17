@@ -22,11 +22,8 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
             font-size: 16px;
-            margin: 10px 2px;
+            margin: 10px 0;
             cursor: pointer;
         }
 
@@ -35,15 +32,15 @@
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
-            overflow-y: auto;
-            max-height: 300px;
+            display: inline-block;
         }
 
         .key {
             background-color: #555;
-            padding: 8px;
+            padding: 10px;
             border-radius: 4px;
-            margin: 5px 0;
+            font-size: 18px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
         }
@@ -60,20 +57,29 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-<h1>Key Generator</h1>
-<p>Click the button to generate 100 keys for 72-hour access</p>
-<button onclick="generateKeys()">Generate Keys</button>
+<h1>Generate a Single Key</h1>
+<p>Click the button below to generate one key for 72-hour access.</p>
 
-<div class="key-container" id="keyContainer"></div>
+<button id="generateKeyBtn" onclick="generateKey()">Generate Key</button>
+
+<div class="key-container hidden" id="keyContainer">
+    <div class="key">
+        <span id="keyText"></span>
+        <button class="copy-button" onclick="copyToClipboard()">Copy</button>
+    </div>
+</div>
 
 <script>
     const VALID_CHARACTERS = 'ABCDabcd1234567890#';
     const KEY_LENGTH = 45;
-    const TOTAL_KEYS = 100;
 
     function generateRandomKey() {
         let key = '';
@@ -83,30 +89,25 @@
         return key;
     }
 
-    function generateKeys() {
+    function generateKey() {
         const keyContainer = document.getElementById('keyContainer');
-        keyContainer.innerHTML = ''; // Clear previous keys
+        const keyTextElement = document.getElementById('keyText');
+        const generateKeyBtn = document.getElementById('generateKeyBtn');
 
-        let keys = [];
-        for (let i = 0; i < TOTAL_KEYS; i++) {
-            const key = generateRandomKey();
-            keys.push(key);
-            const keyElement = document.createElement('div');
-            keyElement.classList.add('key');
-            keyElement.innerHTML = `
-                <span>${key}</span>
-                <button class="copy-button" onclick="copyToClipboard('${key}')">Copy</button>
-            `;
-            keyContainer.appendChild(keyElement);
-        }
+        const key = generateRandomKey();
+        keyTextElement.textContent = key;
 
-        // Download keys as a file
-        downloadFile(keys.join('\n'), 'valid_keys.txt');
+        keyContainer.classList.remove('hidden'); // Show the key container
+        generateKeyBtn.disabled = true; // Disable the button so user can't generate another key
+
+        // Automatically download the key as a file
+        downloadFile(key, 'valid_key.txt');
     }
 
-    function copyToClipboard(key) {
-        navigator.clipboard.writeText(key).then(() => {
-            alert('Key copied to clipboard: ' + key);
+    function copyToClipboard() {
+        const keyText = document.getElementById('keyText').textContent;
+        navigator.clipboard.writeText(keyText).then(() => {
+            alert('Key copied to clipboard: ' + keyText);
         });
     }
 
