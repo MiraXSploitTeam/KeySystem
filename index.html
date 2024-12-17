@@ -3,28 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Generator</title>
+    <title>Access Key Generator</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #1a1a1a;
             color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
             text-align: center;
-            padding: 20px;
+            background-color: #2b2b2b;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 400px;
         }
 
         h1 {
-            margin-bottom: 10px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px 0;
-            cursor: pointer;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #4CAF50;
         }
 
         .key-container {
@@ -32,93 +43,89 @@
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
 
         .key {
-            background-color: #555;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 18px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .key span {
-            flex-grow: 1;
+            background-color: #444;
+            padding: 15px 10px;
+            border-radius: 8px;
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: #4CAF50;
+            word-break: break-all;
         }
 
         .copy-button {
             background-color: #007BFF;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .hidden {
-            display: none;
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
         }
     </style>
 </head>
 <body>
 
-<h1>Generate a Single Key</h1>
-<p>Click the button below to generate one key for 72-hour access.</p>
+    <div class="container">
+        <h1>Your Access Key</h1>
+        
+        <div class="key-container">
+            <span class="key" id="keyText">Generating key...</span>
+        </div>
 
-<button id="generateKeyBtn" onclick="generateKey()">Generate Key</button>
+        <button class="copy-button" onclick="copyToClipboard()">Copy Key</button>
 
-<div class="key-container hidden" id="keyContainer">
-    <div class="key">
-        <span id="keyText"></span>
-        <button class="copy-button" onclick="copyToClipboard()">Copy</button>
+        <div class="footer">
+            This key will give you access for 72 hours.
+        </div>
     </div>
-</div>
 
-<script>
-    const VALID_CHARACTERS = 'ABCDabcd1234567890#';
-    const KEY_LENGTH = 45;
+    <script>
+        const VALID_CHARACTERS = 'ABCDabcd1234567890#';
+        const KEY_LENGTH = 45;
 
-    function generateRandomKey() {
-        let key = '';
-        for (let i = 0; i < KEY_LENGTH; i++) {
-            key += VALID_CHARACTERS.charAt(Math.floor(Math.random() * VALID_CHARACTERS.length));
+        function generateRandomKey() {
+            let key = '';
+            for (let i = 0; i < KEY_LENGTH; i++) {
+                key += VALID_CHARACTERS.charAt(Math.floor(Math.random() * VALID_CHARACTERS.length));
+            }
+            return key;
         }
-        return key;
-    }
 
-    function generateKey() {
-        const keyContainer = document.getElementById('keyContainer');
-        const keyTextElement = document.getElementById('keyText');
-        const generateKeyBtn = document.getElementById('generateKeyBtn');
+        function displayGeneratedKey() {
+            const keyTextElement = document.getElementById('keyText');
+            const key = generateRandomKey();
+            keyTextElement.textContent = key;
+        }
 
-        const key = generateRandomKey();
-        keyTextElement.textContent = key;
+        function copyToClipboard() {
+            const keyText = document.getElementById('keyText').textContent;
+            navigator.clipboard.writeText(keyText).then(() => {
+                alert('Key copied to clipboard: ' + keyText);
+            });
+        }
 
-        keyContainer.classList.remove('hidden'); // Show the key container
-        generateKeyBtn.disabled = true; // Disable the button so user can't generate another key
-
-        // Automatically download the key as a file
-        downloadFile(key, 'valid_key.txt');
-    }
-
-    function copyToClipboard() {
-        const keyText = document.getElementById('keyText').textContent;
-        navigator.clipboard.writeText(keyText).then(() => {
-            alert('Key copied to clipboard: ' + keyText);
-        });
-    }
-
-    function downloadFile(content, fileName) {
-        const blob = new Blob([content], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = fileName;
-        link.click();
-    }
-</script>
+        // Automatically generate and display a key on page load
+        window.onload = displayGeneratedKey;
+    </script>
 
 </body>
 </html>
